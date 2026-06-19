@@ -1,0 +1,7 @@
+{
+  "name": "retz8-harness",
+  "owner": { "name": "retz8" },
+  "plugins": [
+    { "name": "daily-work-harness", "source": "./" }
+  ]
+}
