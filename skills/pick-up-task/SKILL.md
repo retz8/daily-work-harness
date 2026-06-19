@@ -9,7 +9,7 @@ The session's dispatcher. **Read `${CLAUDE_PLUGIN_ROOT}/daily-workflow.md` in fu
 
 ## Workflow
 
-1. **Read state.** `_dev/TODO.md` (phase headings, `[WIP]`/`[done]` markers, `N.M` checkboxes). Pick the earliest non-`[done]` phase; a `[WIP]` phase is resumed before any later phase. If the user named a phase or sub-task, use it.
+1. **Read state.** If there is no `_dev/TODO.md`, run `daily-work-harness:scaffold-dev` first to create the workspace, then continue. Otherwise read `_dev/TODO.md` (phase headings, `[WIP]`/`[done]` markers, `N.M` checkboxes). Pick the earliest non-`[done]` phase; a `[WIP]` phase is resumed before any later phase. If the user named a phase or sub-task, use it.
 
 2. **Present the next action, then stop.** Surface where pickup has landed — which phase, its state, and what the next action would be — and wait for the user's go-ahead before acting. **Auto-picking the phase is fine; never auto-proceed into the work.** What you surface depends on phase state:
    - **Fresh phase** (no `[WIP]`, no `_dev/docs/spec/phase-<N>-*.md`): next action is *start Phase N and write its spec* (grill → spec). Don't mark `[WIP]` yet.

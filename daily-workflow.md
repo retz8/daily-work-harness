@@ -51,4 +51,4 @@ Reads `_dev/TODO.md` + this doc, then routes on phase state. Phase selection: th
 
 ## Skills
 
-`daily-work-harness:pick-up-task` (dispatcher), `daily-work-harness:wrap-up`, `daily-work-harness:rebase-with-main`, plus `grill-me` / `daily-work-harness:grill-to-spec`.
+`daily-work-harness:scaffold-dev` (one-time `_dev/` setup), `daily-work-harness:pick-up-task` (dispatcher), `daily-work-harness:wrap-up`, `daily-work-harness:rebase-with-main`, plus `grill-me` / `daily-work-harness:grill-to-spec`.
