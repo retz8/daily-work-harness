@@ -40,5 +40,6 @@ Invoked namespaced as `/daily-work-harness:<skill>`:
 - **grill-to-spec** — convert a completed `grill-me` session into a spec under `_dev/docs/spec/`.
 - **rebase-with-main** — rebase a sub-task worktree branch onto `main`.
 - **wrap-up** — close a session: commit, tick `_dev/TODO.md`, merge a finished sub-task, or save a handoff.
+- **review-nightly** — triage the open `phase-<N>/<M>-*` PRs an autonomous run left on the remote: review each against its phase spec, then merge or close.
 
 The workflow model these fit is documented in [`daily-workflow.md`](./daily-workflow.md).

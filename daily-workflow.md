@@ -38,6 +38,10 @@ Reads `_dev/TODO.md` + this doc, then routes on phase state. Phase selection: th
 - If the sub-task is done: tick `N.M`; if it was the last, ask to mark the phase `[done]`. Owns the user-permitted worktree → `main` merge.
 - If invoked mid-session: overwrite the concise handoff doc (`_dev/docs/handoff/phase-<N>.md` or `task-<N.M>.md`).
 
+## Autonomous PRs — `review-nightly`
+
+An autonomous run can produce a sub-task PR off `main` on the same `phase-<N>/<M>-<kebab>` branch — plan doc + code on the branch, gates run before the PR opens. `review-nightly` is the morning counterpart: triage the open `phase-<N>/<M>-*` PRs, review each against its phase spec, and on go-ahead merge (merge commit) and hand to `wrap-up` for the `N.M` tick. One open PR per sub-task; `[needs-attention]` drafts are failed runs.
+
 ## Branching, merge, commits
 
 - Worktrees off `main`, one per sub-task: `phase-<N>/<M>-<kebab>`. `rebase-with-main` absorbs anything that landed on `main`. Merge to `main` is user-permitted, via `wrap-up`.
@@ -51,4 +55,4 @@ Reads `_dev/TODO.md` + this doc, then routes on phase state. Phase selection: th
 
 ## Skills
 
-`daily-work-harness:scaffold-dev` (one-time `_dev/` setup), `daily-work-harness:pick-up-task` (dispatcher), `daily-work-harness:wrap-up`, `daily-work-harness:rebase-with-main`, plus `grill-me` / `daily-work-harness:grill-to-spec`.
+`daily-work-harness:scaffold-dev` (one-time `_dev/` setup), `daily-work-harness:pick-up-task` (dispatcher), `daily-work-harness:wrap-up`, `daily-work-harness:rebase-with-main`, `daily-work-harness:review-nightly` (autonomous-PR triage), plus `grill-me` / `daily-work-harness:grill-to-spec`.
