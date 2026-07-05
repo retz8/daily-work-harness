@@ -58,11 +58,12 @@ Number first. Filename comes from the TODO number when available, otherwise name
 2. Derive the target path per the File naming rules above. Do not ask, do not confirm.
 3. Write the spec directly to that path using the required structure. Do not display the draft to the user beforehand — just write it.
 4. Report the written path in one line. The user will redirect if revisions are needed.
+5. **Closing fork.** After the path is reported, offer the two ways forward — **delegate** the task to the nightly routine (`daily-work-harness:delegate-task`) or **work it this session**. This single fork is the only next-step this skill gives; nothing more.
 
 ## What this skill never does
 
 - Decompose the task into sub-tasks or a plan.
 - Specify file contents, command flags, or code shapes.
-- Add "recommended next steps."
+- Add "recommended next steps" beyond the single closing delegate / work-now fork.
 - Re-open decisions the grill closed.
 - Add decisions the grill did not cover.
