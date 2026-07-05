@@ -14,14 +14,14 @@ Projects a task into a GitHub issue the nightly routine can run unattended. **Re
    - Invoked with no argument or a free-form description → **`kind:standalone`**. Interview for the full definition; derive a kebab title.
 
 2. **Readiness gate.** Confirm the task is defined enough to run unattended.
-   - `kind:spec`: the phase spec must exist — if not, stop ("spec the phase first"). If the definition is only a thin phase-spec handle, surface the choice: grill / `superpowers:writing-plans` **now, this session**, or proceed trusting the Plan-skill section to let the routine plan from the phase spec. "No plan doc" is **not** "not ready"; "not ready" is a definition too thin for even planning to land — kick that back to a grill/spec.
-   - `kind:standalone`: the interview captures the definition; a large one may reference a spec/plan path instead of inlining it.
-   - This gate normally passes trivially — `/delegate-task` is usually invoked right after a grill/spec in the same session.
+   - `kind:spec`: the phase must be spec'd (else stop — "spec the phase first"). If the sub-task is only a thin phase-spec handle, offer to grill / `superpowers:writing-plans` now, or proceed and let the Plan skill plan from the phase spec. A missing plan doc is **not** a blocker; too thin to plan from is — send that back to a grill/spec.
+   - `kind:standalone`: the interview captures the definition; a large one may point to a spec/plan path instead of inlining.
+   - Normally trivial — `/delegate-task` usually follows a grill/spec in the same session.
 
 3. **Dedupe.** List open issues. Refuse if the task already has one — one open issue per task (`kind:spec` keys on the `[N.M]` title / the `(#N)` in the TODO line; `kind:standalone` cannot auto-dedupe, so use judgment).
 
 4. **Judge skills — propose, the human confirms or overrides.**
-   - **Plan:** plan doc exists → none, execute it. No plan doc and planning **not** warranted (small, well-scoped) → propose **direct execution**, no Plan-skill section. No plan doc and planning warranted (multi-step, needs decomposition) → propose a **Plan skill**. Bias toward the leaner option.
+   - **Plan:** plan doc exists → execute it, no Plan skill. No plan doc → propose **direct execution** for a small/well-scoped task, or a **Plan skill** if it needs decomposition. Bias toward the leaner option.
    - **Execution:** propose the execution skill that fits the project (read its `CLAUDE.md` + installed skills), or none for freeform.
 
 5. **Dependencies.** Ask for the blocking issue numbers; ensure each `blocked-by:#<N>` label exists and apply it. A dependency must already be delegated so its number exists.
