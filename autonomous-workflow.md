@@ -68,3 +68,43 @@ Body:
 | **Depends on** | the blocking issue numbers, mirroring `blocked-by:#<N>`; omitted if none |
 
 The issue body is the **sole authority** on which skills run — the routine invokes exactly the named skills, freeform if none. The PR auto-wires `Closes #<N>` so a merge closes the issue.
+
+## Produce
+
+The nightly routine is a self-contained prompt registered as a Claude cloud Routine via `/schedule`, run against a fresh clone of the project repo with **no harness plugin present**. The executable is [`nightly-routine-prompt.md`](./nightly-routine-prompt.md); this section is the map it is kept consistent with.
+
+Each fire **drains the queue**: it lists every **eligible** issue — open, `autonomous-ready`, no `blocked-by:*`, no `blocked:setup`, no open PR — oldest first, then works them one at a time, **a subagent per issue**. Each issue is finished (commit → push → open PR) before the next starts, so a completed task's open PR is a durable checkpoint: the run is resumable across fires, and unreached issues roll to the next fire.
+
+### Outcomes
+
+Running one issue ends in exactly one terminal outcome:
+
+| Outcome | Artifact | Label | Re-grabbed? |
+|---|---|---|---|
+| clean | non-draft PR | `review-ready` (PR) | no — open PR |
+| blocked on a decision | non-draft PR, partial work | `needs-input` (PR) | no — open PR |
+| gates red / mid-run error | non-draft PR | `needs-attention` (PR) | no — open PR |
+| precondition failure | issue comment, no PR | `blocked:setup` (issue) | no — label excludes it |
+| hard crash | none | none | yes, next fire |
+
+A **precondition failure** is anything that stops the run before work can start — a named skill not committed to the clone, a referenced spec/plan path absent, or an unparseable issue body. The routine applies `blocked:setup` and leaves one comment (blocker + fix), then stops without a PR:
+
+```
+## ⛔ blocked:setup — autonomous run could not start
+- **Blocker:** <one line: which precondition failed>
+- **Details:** <the skill name / missing path / absent field>
+- **Fix:** <what to do, then remove the `blocked:setup` label to re-queue>
+```
+
+### PR shape
+
+Every produced PR is **non-draft**, its title mirrors the issue, and its body carries a `## Related issue` section with `Closes #<N>` (a merge closes the issue), a summary, a gates block, and one per-outcome section: recorded assumptions (`review-ready`), a **Decision needed** writeup (`needs-input`), or a **Failure** writeup (`needs-attention`). Exactly one outcome label is applied.
+
+### Routine setup
+
+Per-project operator setup, done once when adopting the routine (ungraded):
+
+- Register `nightly-routine-prompt.md`'s content via `/schedule` as a **Remote** routine (not a local/desktop task — Remote runs fully autonomously with no approval prompts), on a nightly cadence, on a capable model (e.g. Opus).
+- Enable **unrestricted branch pushes** for the repo — Routines default to `claude/`-prefixed branches, but the contract uses `phase-<N>/<M>-*` / `task/<kebab>`.
+- Provide an environment **setup script** that installs the project's dependencies so gates can run, plus any network hosts the gates need beyond the default allowlist.
+- Ensure the project's Plan/Execution skills are committed under `.claude/skills/` — the routine has no access to plugin skills, only repo-committed ones.
