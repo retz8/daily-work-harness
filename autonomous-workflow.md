@@ -1,15 +1,19 @@
 # Autonomous workflow
 
-The map of the autonomous half of the daily-work harness: a delegated task becomes a GitHub issue, a nightly routine produces a gated PR, and `review-nightly` merges it back. `daily-work-harness:delegate-task` reads this doc in full, so it stays concise. The produce and review sections land with the 5.2 / 5.3 sub-tasks.
+The map of the autonomous half of the daily-work harness: a delegated task becomes a GitHub issue, a nightly routine produces a gated PR, and `review-nightly` merges it back. The **Contract** section below is the coupling all three pieces share; the **Produce** section maps the nightly routine. Kept concise — its readers read it by section.
 
-## The unit
+## Contract
+
+The issue/label contract the writer (`delegate-task`), the producer (the nightly routine), and the closer (`review-nightly`) all conform to.
+
+### The unit
 
 A delegated task is one GitHub **issue** = one PR = one merge, created in the project's own `origin` repo. Two kinds:
 
 - **`kind:spec`** — the definition is a committed spec + a `_dev/TODO.md` `N.M` line; the producer reads the spec.
 - **`kind:standalone`** — self-contained; the full definition is in the issue body.
 
-## Labels
+### Labels
 
 Issue and PR labels never overlap: **issue labels = queue / classification / dependency; PR labels = run outcome.**
 
@@ -19,7 +23,8 @@ Issue labels:
 |---|---|
 | `autonomous-ready` | the selector — the human's "safe to run unattended" gate; the routine's filter |
 | `kind:spec` \| `kind:standalone` | how to read the task |
-| `blocked-by:#<N>` (0+) | one per unmet dependency |
+| `blocked-by:#<N>` (0+) | one per unmet dependency; auto-cleared when the dependency closes |
+| `blocked:setup` | the routine tried and could not start (missing skill / path / malformed issue); human-cleared |
 
 PR labels — every produced PR carries **exactly one**:
 
@@ -31,20 +36,20 @@ PR labels — every produced PR carries **exactly one**:
 
 `autonomous-ready` (entry) and `review-ready` (exit) are the paired gates: the human gates entry, the machine gates exit.
 
-## States
+### States
 
 Most states are inferred, not labelled:
 
-- **queued** — open issue, `autonomous-ready`, no linked PR, no `blocked-by:*` remaining.
-- **blocked** — carries ≥1 `blocked-by:#<N>`; the routine skips it.
+- **queued** — open issue, `autonomous-ready`, no linked PR, no `blocked-by:*` remaining, not `blocked:setup`.
+- **blocked** — carries ≥1 `blocked-by:#<N>`, or `blocked:setup`; the routine skips it.
 - **produced** — an open PR exists; its outcome label (`review-ready` / `needs-input` / `needs-attention`) says whether it's mergeable, blocked on input, or failed. Produced PRs are never drafts — the label alone gates merge, and any open PR stops re-grabbing (the one-open-PR-per-task guarantee).
 - **done** — issue closed (its PR merged).
 
-### `blocked-by:#<N>`
+### Dependencies — `blocked-by:#<N>`
 
 Dependencies are `blocked-by:#<N>` labels, one per blocking issue; unblocked = zero remain. When a dependency issue closes, its `blocked-by:#<N>` label is deleted repo-wide, which strips it from every dependent at once. Ordering follows: a dependency is delegated first so its number exists to reference.
 
-## Issue schema
+### Issue schema
 
 Title:
 
