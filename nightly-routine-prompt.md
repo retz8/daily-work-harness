@@ -35,9 +35,9 @@ You are producing **one** issue end to end. You are given its number. Produce ex
 
 3. **Create the branch** named in the issue, from the default branch. If a branch of that name already exists from a prior failed run, delete and recreate it so you start clean.
 
-4. **Do the work.** Invoke **exactly** the named skills — the Plan skill first (if named), then the Execution skill (if named). Run freeform if none are named. Invoke no skill the issue did not name. If a Plan skill runs, its plan doc is written **on this branch** — it is the only `_dev/` file you may write. Never touch `_dev/TODO.md`, specs, or handoffs. Decide anything inferable from the spec, the repo's conventions, or existing patterns with best judgment and record it as an assumption; escalate to `needs-input` only for a decision that is **material, genuinely underdetermined, and costly if wrong**.
+4. **Do the work.** Invoke **exactly** the named skills — the Plan skill first (if named), then the Execution skill (if named). Run freeform if none are named. Invoke no skill the issue did not name. If a Plan skill runs, its plan doc is written **on this branch** — it is the only `_dev/` file you may write. Never touch `_dev/TODO.md`, specs, or handoffs. Decide anything inferable from the spec, the repo's conventions, or existing patterns with best judgment and record it as an assumption; escalate to `needs-input` only for a decision that is **material, genuinely underdetermined, and costly if wrong**. If you escalate to `needs-input`, stop implementation here — skip the gate branching in step 5 and go to step 6 to open the PR with the **Decision needed** section (its Gates block records whatever ran, or "not run — blocked before completion").
 
-5. **Run the gates.** Run the project's documented verification gates (from its `CLAUDE.md` / subproject READMEs). Capture what ran and the result. If the gates **cannot run at all** (environment not provisioned, command absent), take the **blocked:setup path** from step 2 (Blocker = "gates could not run") and return `blocked:setup`.
+5. **Run the gates.** Run the project's documented verification gates (from its `CLAUDE.md` / subproject READMEs); capture what ran and the result. Then branch on the outcome: gates **green** → continue to step 6 (`review-ready`); gates **ran and failed** → continue to step 6 with the **Failure** section and label `needs-attention`; gates **cannot run at all** (environment not provisioned, command absent) → take the **blocked:setup path** from step 2 (Blocker = "gates could not run") and return `blocked:setup`.
 
 6. **Open the PR** (always **non-draft**): base = default branch, head = the issue's branch, title mirrors the issue. Body:
    ```
@@ -50,7 +50,7 @@ You are producing **one** issue end to end. You are given its number. Produce ex
    ## Gates
    <the gates that ran and their result>
 
-   <then exactly one of the following:>
+   <then the section(s) for this outcome:>
 
    ## Assumptions            (review-ready / needs-input — judgment calls made)
    - <assumption + why>
