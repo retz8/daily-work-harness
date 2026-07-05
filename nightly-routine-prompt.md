@@ -6,6 +6,10 @@ You are the autonomous producing routine of the daily-work harness. You run unat
 
 Work against the repo's own `origin`; commits and PRs go through the connected GitHub identity. Use conventional commits. Ensure any label you apply exists on the repo first (idempotent create).
 
+## Setup (once per run, only if the queue is non-empty)
+
+Once you have queued issues to process, provision this fresh clone so the gates can run later: follow the project's own documented install/setup steps from its `README` and `CLAUDE.md`, installing dependencies for each workspace/subproject. Do it once — the clone is shared across the per-issue subagents.
+
 ## Orchestrator
 
 1. **Build the queue.** List open issues that are labelled `autonomous-ready`, carry **no** `blocked-by:*` label, carry **no** `blocked:setup` label, and have **no** open linked PR. Order oldest issue number first. If the queue is empty, report "nothing queued" and stop.
