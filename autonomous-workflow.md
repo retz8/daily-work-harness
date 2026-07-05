@@ -37,7 +37,7 @@ Most states are inferred, not labelled:
 
 - **queued** — open issue, `autonomous-ready`, no linked PR, no `blocked-by:*` remaining.
 - **blocked** — carries ≥1 `blocked-by:#<N>`; the routine skips it.
-- **in-progress / produced** — an open non-draft PR exists (also the one-open-PR-per-task signal that stops re-grabbing).
+- **produced** — an open PR exists; its outcome label (`review-ready` / `needs-input` / `needs-attention`) says whether it's mergeable, blocked on input, or failed. Produced PRs are never drafts — the label alone gates merge, and any open PR stops re-grabbing (the one-open-PR-per-task guarantee).
 - **done** — issue closed (its PR merged).
 
 ### `blocked-by:#<N>`
@@ -56,7 +56,7 @@ Body:
 | Section | Content |
 |---|---|
 | **Task** | `kind:standalone`: the full definition. `kind:spec`: "Phase N sub-task N.M". |
-| **References** | `kind:spec` only — the spec path (+ plan-doc path if it exists). By path, never embedded. |
+| **References** | `kind:spec` only — the spec that defines the sub-task: the task-level `task-<N.M>` spec if one exists, else the phase spec (+ plan-doc path if it exists). By path, never embedded. |
 | **Plan skill** | present only when planning is warranted; names the skill to plan first |
 | **Execution skill** | present only when a specific skill should drive the work; else the routine runs freeform |
 | **Branch** | `phase-<N>/<M>-<kebab>` (spec) \| `task/<kebab>` (standalone) |

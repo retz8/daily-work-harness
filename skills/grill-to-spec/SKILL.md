@@ -58,7 +58,7 @@ Number first. Filename comes from the TODO number when available, otherwise name
 2. Derive the target path per the File naming rules above. Do not ask, do not confirm.
 3. Write the spec directly to that path using the required structure. Do not display the draft to the user beforehand — just write it.
 4. Report the written path in one line. The user will redirect if revisions are needed.
-5. **Closing fork.** After the path is reported, offer the two ways forward — **delegate** the task to the nightly routine (`daily-work-harness:delegate-task`) or **work it this session**. This single fork is the only next-step this skill gives; nothing more.
+5. **Closing fork.** After the path is reported, offer the next step. For a **sub-task** (`task-<N.M>`) spec: **delegate** it to the nightly routine (`daily-work-harness:delegate-task`) or **work it this session**. For a **phase** spec: there is no task to delegate yet — point to inlining the phase's `N.M` sub-tasks (each is delegated later, per sub-task). This single fork is the only next-step this skill gives; nothing more.
 
 ## What this skill never does
 

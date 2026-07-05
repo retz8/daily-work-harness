@@ -10,7 +10,7 @@ Projects a task into a GitHub issue the nightly routine can run unattended. **Re
 ## Workflow
 
 1. **Resolve target + kind.**
-   - Invoked with `N.M` → **`kind:spec`**. Read its `_dev/TODO.md` line (assume it is already `[WIP]`, picked up) + the phase spec, plus `_dev/docs/plan/task-<N.M>-*.md` if present.
+   - Invoked with `N.M` → **`kind:spec`**. Read its `_dev/TODO.md` line (assume it is already `[WIP]`, picked up) + the spec that defines the sub-task (the task-level `_dev/docs/spec/task-<N.M>-*.md` if one exists, else the phase spec), plus `_dev/docs/plan/task-<N.M>-*.md` if present.
    - Invoked with no argument or a free-form description → **`kind:standalone`**. Interview for the full definition; derive a kebab title.
 
 2. **Readiness gate.** Confirm the task is defined enough to run unattended.
