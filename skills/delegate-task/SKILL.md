@@ -5,7 +5,7 @@ description: Project a task — a spec'd `N.M` sub-task, or a standalone hotfix/
 
 # delegate-task
 
-Projects a task into a GitHub issue the nightly routine can run unattended. **Read `${CLAUDE_PLUGIN_ROOT}/autonomous-workflow.md` in full first** — it defines the issue/label contract this skill writes. Interactive and human-gated; run from the repo root (`main`). Issues are created in the project's own `origin` repo.
+Projects a task into a GitHub issue the nightly routine can run unattended. **First read the contract** — `sed -n '/^## Contract/,/^## Produce/p' ${CLAUDE_PLUGIN_ROOT}/autonomous-workflow.md` — the issue/label contract this skill writes. Interactive and human-gated; run from the repo root (`main`). Issues are created in the project's own `origin` repo.
 
 ## Workflow
 
