@@ -24,7 +24,7 @@ Issue labels:
 | `autonomous-ready` | the selector — the human's "safe to run unattended" gate; the routine's filter |
 | `kind:spec` \| `kind:standalone` | how to read the task |
 | `blocked-by:#<N>` (0+) | one per unmet dependency; auto-cleared when the dependency closes |
-| `blocked:setup` | the routine tried and could not start (missing skill / path / malformed issue); human-cleared |
+| `blocked:setup` | the routine hit a setup blocker — a missing skill / path, a malformed issue, or an environment that can't run the gates; human-cleared |
 
 PR labels — every produced PR carries **exactly one**:
 
@@ -87,7 +87,7 @@ Running one issue ends in exactly one terminal outcome:
 | precondition failure | issue comment, no PR | `blocked:setup` (issue) | no — label excludes it |
 | hard crash | none | none | yes, next fire |
 
-A **precondition failure** is anything that stops the run before work can start — a named skill not committed to the clone, a referenced spec/plan path absent, or an unparseable issue body. The routine applies `blocked:setup` and leaves one comment (blocker + fix), then stops without a PR:
+A **precondition failure** is a setup blocker the routine can't fix itself — a named skill not committed to the clone, a referenced spec/plan path absent, an unparseable issue body, or an environment that cannot run the project's gates. The routine applies `blocked:setup` and leaves one comment (blocker + fix), then stops without a PR:
 
 ```
 ## ⛔ blocked:setup — autonomous run could not start
