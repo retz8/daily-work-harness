@@ -1,6 +1,6 @@
 # Autonomous workflow
 
-The map of the autonomous half of the daily-work harness: a delegated task becomes a GitHub issue, a nightly routine produces a gated PR, and `review-nightly` merges it back. The **Contract** section below is the coupling all three pieces share; the **Produce** section maps the nightly routine. Kept concise — its readers read it by section.
+The map of the autonomous half of the daily-work harness: a delegated task becomes a GitHub issue, a nightly routine produces a gated PR, and `review-nightly` merges it back. The **Contract** section below is the coupling all three pieces share; **Produce** maps the nightly routine; **Review** maps the morning triage. Kept concise — its readers read it by section.
 
 ## Contract
 
@@ -26,13 +26,14 @@ Issue labels:
 | `blocked-by:#<N>` (0+) | one per unmet dependency; auto-cleared when the dependency closes |
 | `blocked:setup` | the routine hit a setup blocker — a missing skill / path, a malformed issue, or an environment that can't run the gates; human-cleared |
 
-PR labels — every produced PR carries **exactly one**:
+PR labels — mutually exclusive; a produced PR carries **exactly one** outcome label, which `review-nightly` may later swap for `autonomous-revise-ready` to hand the PR back:
 
 | Label | Meaning | review-nightly |
 |---|---|---|
 | `review-ready` | produced clean, ready for merge | case-1 |
 | `needs-input` | run stuck on a decision it can't make | case-2 |
 | `needs-attention` | run failed mechanically (gates red / errored) | fix or close |
+| `autonomous-revise-ready` | a human resolved the blocker; the routine may resume this branch | set by `review-nightly` (re-delegate) |
 
 `autonomous-ready` (entry) and `review-ready` (exit) are the paired gates: the human gates entry, the machine gates exit.
 
@@ -43,6 +44,7 @@ Most states are inferred, not labelled:
 - **queued** — open issue, `autonomous-ready`, no linked PR, no `blocked-by:*` remaining, not `blocked:setup`.
 - **blocked** — carries ≥1 `blocked-by:#<N>`, or `blocked:setup`; the routine skips it.
 - **produced** — an open PR exists; its outcome label (`review-ready` / `needs-input` / `needs-attention`) says whether it's mergeable, blocked on input, or failed. Produced PRs are never drafts — the label alone gates merge, and any open PR stops re-grabbing (the one-open-PR-per-task guarantee).
+- **re-queued for revision** — an open PR relabelled `autonomous-revise-ready` by `review-nightly` after a human resolved its blocker; the routine re-grabs it and resumes on the existing branch.
 - **done** — issue closed (its PR merged).
 
 ### Dependencies — `blocked-by:#<N>`
@@ -73,7 +75,7 @@ The issue body is the **sole authority** on which skills run — the routine inv
 
 The nightly routine is a self-contained prompt registered as a Claude cloud Routine via `/schedule`, run against a fresh clone of the project repo with **no harness plugin present**. The executable is [`nightly-routine-prompt.md`](./nightly-routine-prompt.md); this section is the map it is kept consistent with.
 
-Each fire **drains the queue**: it lists every **eligible** issue — open, `autonomous-ready`, no `blocked-by:*`, no `blocked:setup`, no open PR — oldest first, then works them one at a time, **a subagent per issue**. Each issue is finished (commit → push → open PR) before the next starts, so a completed task's open PR is a durable checkpoint: the run is resumable across fires, and unreached issues roll to the next fire.
+Each fire **drains the queue** from two sources: every **eligible issue** — open, `autonomous-ready`, no `blocked-by:*`, no `blocked:setup`, no open PR — and every **`autonomous-revise-ready` PR** (one whose blocker a human resolved via `review-nightly`). Work-items are ordered oldest first and worked one at a time, **a subagent per item**. A fresh issue produces a new PR on a new branch; a revise PR is **resumed on its existing branch** — the subagent re-reads the issue's resolution comment and, for `kind:spec`, the updated spec on that branch, continues the work, re-runs gates, and flips `autonomous-revise-ready` to the resulting outcome label (`review-ready` on a clean pass). Each item is finished (commit → push → PR) before the next starts, so an open PR is a durable checkpoint: the run is resumable across fires, and unreached items roll to the next fire.
 
 ### Outcomes
 
@@ -108,3 +110,39 @@ Per-project operator setup, done once when adopting the routine (ungraded):
 - Enable **unrestricted branch pushes** for the repo — Routines default to `claude/`-prefixed branches, but the contract uses `phase-<N>/<M>-*` / `task/<kebab>`.
 - Ensure the environment provides the **base toolchain and network** the gates need (language runtimes, allowed domains) — the routine installs the project's own dependencies from its documented setup.
 - Ensure the project's Plan/Execution skills are committed under `.claude/skills/` — the routine has no access to plugin skills, only repo-committed ones.
+
+## Review
+
+`review-nightly` is the morning triage/merge counterpart, run locally from `main`. It builds a four-lane inbox from **labels, not branches**, and drives one item at a time to a terminal state; nothing merges or acts without the human's go-ahead.
+
+### The four lanes
+
+Two queries — open PRs by outcome label, open issues by `blocked:setup`:
+
+| Lane | Source | Disposition |
+|---|---|---|
+| `review-ready` | PR | review → merge (case-1) |
+| `needs-input` | PR | resolve the blocker → fix or re-delegate (case-2) |
+| `needs-attention` | PR | fix or reject — never merge as-is |
+| `blocked:setup` | issue (no PR) | report the blocker → re-queue once setup is fixed |
+
+### Reviewing a PR
+
+The chosen PR's **live branch is checked out in a worktree** off that branch — both the review substrate and the fix channel. Review runs in one of three modes: **mechanical** (`code-review` on the diff, anchored to the bar), **local** (run the project's gates / app on the branch), or **both** (mechanical then local). The bar is the task-level `task-<N.M>` spec for `kind:spec` (phase spec as context), the issue body for `kind:standalone`. It judges: does it fulfil the bar, real bugs, scope creep (`_dev/` beyond its own plan doc, or another task's surface). Findings are surfaced; the human decides.
+
+### Decision menu
+
+- **Merge** (`review-ready`, post-review) — merge commit, delete branch; `Closes #<N>` closes the issue. `kind:spec` hands to `wrap-up` for the `_dev/TODO.md` tick (and, if it was the phase's last sub-task, the `[done]` prompt); `kind:standalone` has no tick.
+- **Fix live** — apply the fix in the worktree, push (the PR updates in place), re-review, merge.
+- **Re-delegate** — relabel the PR `autonomous-revise-ready` and leave it open; the routine resumes it next fire (see Produce).
+- **Reject** — close the PR and delete its branch; leave the issue open with `autonomous-ready` stripped.
+
+A `review-ready` PR that fails review drops into the same fix / re-delegate / reject fork. `needs-attention` uses the same fork with **no** spec-change precursor.
+
+### Case-2 — resolving a `needs-input` blocker
+
+The PR carries a **Decision needed** writeup. The human clarifies it (escalating to a grill if deep), then records the resolution **on the PR branch, not `main`**: for `kind:spec` the governing spec is edited in the worktree — creating a `task-<N.M>` spec if only a phase-spec handle existed — and reaches `main` only at the eventual merge; for `kind:standalone` nothing on the branch changes. Either way the resolution is written as an **issue comment** in three parts — progress so far / why the previous attempt was wrong / the resolved decision — and, for `kind:spec`, a **PR comment** noting what was resolved alongside the spec change. Then the fork: fix live, or re-delegate.
+
+### `blocked:setup`
+
+Report-only: `review-nightly` surfaces the routine's blocker comment; the operator fixes the project setup (outside the harness). Once fixed, it offers to **re-queue** — strip `blocked:setup` and ensure `autonomous-ready` — or the human rejects, closing the issue.

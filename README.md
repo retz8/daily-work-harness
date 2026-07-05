@@ -40,7 +40,7 @@ Invoked namespaced as `/daily-work-harness:<skill>`:
 - **grill-to-spec** — convert a completed `grill-me` session into a spec under `_dev/docs/spec/`.
 - **rebase-with-main** — rebase a sub-task worktree branch onto `main`.
 - **wrap-up** — close a session: commit, tick `_dev/TODO.md`, merge a finished sub-task, or save a handoff.
-- **review-nightly** — triage the open `phase-<N>/<M>-*` PRs an autonomous run left on the remote: review each against its phase spec, then merge or close.
+- **review-nightly** — triage what an autonomous run left on the remote: a four-lane inbox of labelled PRs (`review-ready` / `needs-input` / `needs-attention`) and `blocked:setup` issues, reviewed on their live branch, then merged / fixed / re-delegated / rejected.
 - **delegate-task** — project a task into a GitHub issue conforming to the autonomous-run contract, for the nightly routine to pick up.
 
 The workflow model these fit is documented in [`daily-workflow.md`](./daily-workflow.md); the autonomous half is in [`autonomous-workflow.md`](./autonomous-workflow.md). The nightly producing routine registered via `/schedule` is [`nightly-routine-prompt.md`](./nightly-routine-prompt.md).

@@ -38,9 +38,9 @@ Reads `_dev/TODO.md` + this doc, then routes on phase state. Phase selection: th
 - If the sub-task is done: tick `N.M`; if it was the last, ask to mark the phase `[done]`. Owns the user-permitted worktree → `main` merge.
 - If invoked mid-session: overwrite the concise handoff doc (`_dev/docs/handoff/phase-<N>.md` or `task-<N.M>.md`).
 
-## Autonomous PRs — `review-nightly`
+## Autonomous layer
 
-An autonomous run can produce a sub-task PR off `main` on the same `phase-<N>/<M>-<kebab>` branch — plan doc + code on the branch, gates run before the PR opens. `review-nightly` is the morning counterpart: triage the open `phase-<N>/<M>-*` PRs, review each against its phase spec, and on go-ahead merge (merge commit) and hand to `wrap-up` for the `N.M` tick. One open PR per sub-task; `[needs-attention]` drafts are failed runs.
+The autonomous half — delegate a task to a GitHub issue, a nightly routine produces a gated PR, `review-nightly` triages and merges it back — is mapped in [`autonomous-workflow.md`](./autonomous-workflow.md).
 
 ## Branching, merge, commits
 
