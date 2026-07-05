@@ -64,6 +64,6 @@ Number first. Filename comes from the TODO number when available, otherwise name
 
 - Decompose the task into sub-tasks or a plan.
 - Specify file contents, command flags, or code shapes.
-- Add "recommended next steps" beyond the single closing delegate / work-now fork.
+- Add "recommended next steps" beyond the single closing fork in step 5.
 - Re-open decisions the grill closed.
 - Add decisions the grill did not cover.
