@@ -24,7 +24,7 @@ The morning triage/merge counterpart to the nightly producing routine: build a f
 
 2. **Pick one.** The user chooses; offer "oldest first" to walk a lane. Never auto-pick, never auto-act. A `blocked:setup` row → step 7. A PR row → step 3.
 
-3. **Check out the live PR branch.** Fetch and create a worktree **off the PR's head branch** (not `main`) — this is both the review substrate and the fix channel. The worktree is removed on the terminal action (step 6).
+3. **Check out the live PR branch.** `git fetch origin <headRef>` then `git checkout <headRef>` in the repo root — a **plain local checkout** is the review substrate (one PR at a time, so no isolation is needed). Mechanical mode reads only `gh pr diff`; local mode runs the gates / app on this checkout. **No worktree at review time** — the fix channel is set up later, only if the review sends you into the fix fork (step 6). On the terminal action you return to `main`.
 
 4. **Review.** Offer three modes and run the chosen one:
    - **(1) mechanical** — hand the diff + the bar to `code-review` (or a review subagent);
@@ -39,22 +39,22 @@ The morning triage/merge counterpart to the nightly producing routine: build a f
    - **`needs-attention`** → the fix fork (step 6b/6c) with **no** spec change.
    - Any PR → **Reject** (step 6d).
 
-6. **Drive to terminal state** (only on go-ahead):
+6. **Drive to terminal state** (only on go-ahead). Merge / reject / re-delegate act on the PR directly. Any path that **writes to the PR branch** — the case-2 spec edit (6b-precursor) or a live fix (6b) — first sets up the **fix channel**: `git checkout main` in the repo root to release the branch (review had it checked out), then `git worktree add <path> <headRef>` off the PR's head branch. That worktree is the isolated fix substrate, removed on the terminal action.
 
-   **6a — Merge.** `gh pr merge <n> --merge --delete-branch` (`Closes #<N>` auto-closes the issue). Then `git checkout main && git pull`. For **`kind:spec`**, hand to `daily-work-harness:wrap-up` for the `N.M` tick on `main` (and, if it was the phase's last sub-task, the `[done]` prompt). For **`kind:standalone`**, no tick. Remove the worktree; return to the inbox.
+   **6a — Merge.** `gh pr merge <n> --merge --delete-branch` (`Closes #<N>` auto-closes the issue). Remove the fix worktree if one was created, then `git checkout main && git pull`. For **`kind:spec`**, hand to `daily-work-harness:wrap-up` for the `N.M` tick on `main` (and, if it was the phase's last sub-task, the `[done]` prompt). For **`kind:standalone`**, no tick. Return to the inbox.
 
-   **6b-precursor — case-2 resolution (only for `needs-input`).** Read the PR's **Decision needed** writeup. Clarify it with the user — escalate to `grill-me` if the decision is deep/multi-branch, otherwise a lightweight Q&A. Record the resolution **on the PR branch, not `main`**:
-   - `kind:spec` → in the worktree, edit the governing spec (create `_dev/docs/spec/task-<N.M>-*.md` if only a phase-spec handle existed), commit on the branch. It reaches `main` only at the eventual merge.
+   **6b-precursor — case-2 resolution (only for `needs-input`).** Read the PR's **Decision needed** writeup. Clarify it with the user — escalate to `grill-me` if the decision is deep/multi-branch, otherwise a lightweight Q&A. Record the resolution **on the PR branch, not `main`** (set up the fix channel per the step-6 preamble first):
+   - `kind:spec` → in the fix-channel worktree, edit the governing spec (create `_dev/docs/spec/task-<N.M>-*.md` if only a phase-spec handle existed), commit on the branch. It reaches `main` only at the eventual merge.
    - Leave an **issue comment** in three parts — *progress so far / why the previous attempt was wrong / the resolved decision* — and, for `kind:spec`, a **PR comment** noting what was resolved alongside the spec change.
    - `kind:standalone` → nothing on the branch changes; the issue comment is the decision record.
 
    Then the fork:
 
-   **6b — Fix live.** In the worktree, apply the fix, commit, and push (the PR updates in place — plain push, no rewrite). Return to step 4 to re-review, then merge (6a).
+   **6b — Fix live.** In the fix-channel worktree, apply the fix, commit, and push (the PR updates in place — plain push, no rewrite). Return to step 4 to re-review on the worktree, then merge (6a).
 
-   **6c — Re-delegate.** Push the branch (with any spec change), then swap the PR's outcome label to `autonomous-revise-ready` (clearing `needs-input` / `needs-attention`); ensure the label exists first (idempotent create). Leave the PR open, branch preserved. Remove the local worktree, keep the remote branch. The routine resumes it next fire. Return to the inbox.
+   **6c — Re-delegate.** Push the branch if the fix channel carries commits (a case-2 spec change), then swap the PR's outcome label to `autonomous-revise-ready` (clearing `needs-input` / `needs-attention`); ensure the label exists first (idempotent create). Leave the PR open, branch preserved. Remove the fix worktree if one was created, keep the remote branch; return the repo root to `main`. The routine resumes it next fire. Return to the inbox.
 
-   **6d — Reject.** `gh pr close <n> --delete-branch`. Leave the **issue open with `autonomous-ready` stripped** — the task may still be wanted, just not this attempt, and the routine won't re-grab it. Remove the worktree; return to the inbox.
+   **6d — Reject.** `gh pr close <n> --delete-branch`. Leave the **issue open with `autonomous-ready` stripped** — the task may still be wanted, just not this attempt, and the routine won't re-grab it. Remove the fix worktree if one was created; return the repo root to `main`. Return to the inbox.
 
 7. **`blocked:setup` lane.** Surface the routine's blocker comment (Blocker / Details / Fix) so the user sees what setup is broken. This skill is **not a fixer** — the fix (install a skill, provision env, correct a path) is operator work outside the harness. Once the user confirms setup is fixed, offer to **re-queue**: strip `blocked:setup` **and** ensure `autonomous-ready` is present (full queued state). If the task is misguided, reject instead — close the issue. Return to the inbox.
 

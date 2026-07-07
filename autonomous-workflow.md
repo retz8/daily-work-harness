@@ -128,12 +128,12 @@ Two queries — open PRs by outcome label, open issues by `blocked:setup`:
 
 ### Reviewing a PR
 
-The chosen PR's **live branch is checked out in a worktree** off that branch — both the review substrate and the fix channel. Review runs in one of three modes: **mechanical** (`code-review` on the diff, anchored to the bar), **local** (run the project's gates / app on the branch), or **both** (mechanical then local). The bar is the task-level `task-<N.M>` spec for `kind:spec` (phase spec as context), the issue body for `kind:standalone`. It judges: does it fulfil the bar, real bugs, scope creep (`_dev/` beyond its own plan doc, or another task's surface). Findings are surfaced; the human decides.
+The chosen PR is reviewed on a **plain local checkout** of its head branch in the repo root — one PR at a time, so no isolation is needed: mechanical mode reads only `gh pr diff`, local mode runs the gates / app on the checkout. Review runs in one of three modes: **mechanical** (`code-review` on the diff, anchored to the bar), **local** (run the project's gates / app on the branch), or **both** (mechanical then local). The bar is the task-level `task-<N.M>` spec for `kind:spec` (phase spec as context), the issue body for `kind:standalone`. It judges: does it fulfil the bar, real bugs, scope creep (`_dev/` beyond its own plan doc, or another task's surface). Findings are surfaced; the human decides. A **worktree** is set up only when a path needs to write to the branch (a live fix, or a case-2 spec edit): `git checkout main` to release the branch, then `git worktree add` off the head branch as the isolated fix channel, removed on the terminal action.
 
 ### Decision menu
 
 - **Merge** (`review-ready`, post-review) — merge commit, delete branch; `Closes #<N>` closes the issue. `kind:spec` hands to `wrap-up` for the `_dev/TODO.md` tick (and, if it was the phase's last sub-task, the `[done]` prompt); `kind:standalone` has no tick.
-- **Fix live** — apply the fix in the worktree, push (the PR updates in place), re-review, merge.
+- **Fix live** — set up the fix channel (release the branch to `main`, `git worktree add` off the head branch), apply the fix there, push (the PR updates in place), re-review, merge.
 - **Re-delegate** — relabel the PR `autonomous-revise-ready` and leave it open; the routine resumes it next fire (see Produce).
 - **Reject** — close the PR and delete its branch; leave the issue open with `autonomous-ready` stripped.
 
@@ -141,7 +141,7 @@ A `review-ready` PR that fails review drops into the same fix / re-delegate / re
 
 ### Case-2 — resolving a `needs-input` blocker
 
-The PR carries a **Decision needed** writeup. The human clarifies it (escalating to a grill if deep), then records the resolution **on the PR branch, not `main`**: for `kind:spec` the governing spec is edited in the worktree — creating a `task-<N.M>` spec if only a phase-spec handle existed — and reaches `main` only at the eventual merge; for `kind:standalone` nothing on the branch changes. Either way the resolution is written as an **issue comment** in three parts — progress so far / why the previous attempt was wrong / the resolved decision — and, for `kind:spec`, a **PR comment** noting what was resolved alongside the spec change. Then the fork: fix live, or re-delegate.
+The PR carries a **Decision needed** writeup. The human clarifies it (escalating to a grill if deep), then records the resolution **on the PR branch, not `main`**: for `kind:spec` the governing spec is edited in the fix-channel worktree — creating a `task-<N.M>` spec if only a phase-spec handle existed — and reaches `main` only at the eventual merge; for `kind:standalone` nothing on the branch changes. Either way the resolution is written as an **issue comment** in three parts — progress so far / why the previous attempt was wrong / the resolved decision — and, for `kind:spec`, a **PR comment** noting what was resolved alongside the spec change. Then the fork: fix live, or re-delegate.
 
 ### `blocked:setup`
 
