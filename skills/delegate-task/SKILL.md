@@ -23,6 +23,7 @@ Projects a task into a GitHub issue the nightly routine can run unattended. **Fi
 4. **Judge skills — propose, the human confirms or overrides.**
    - **Plan:** plan doc exists → execute it, no Plan skill. No plan doc → propose **direct execution** for a small/well-scoped task, or a **Plan skill** if it needs decomposition. Bias toward the leaner option.
    - **Execution:** propose the execution skill that fits the project (read its `CLAUDE.md` + installed skills), or none for freeform.
+   - **Name skills by their bare committed `.claude/skills/<name>/` dir name — never a `superpowers:`/plugin prefix.** The routine runs in a fresh clone with no plugins; a prefixed name won't resolve and fails the item to `blocked:setup`.
 
 5. **Dependencies.** Ask for the blocking issue numbers; ensure each `blocked-by:#<N>` label exists and apply it. A dependency must already be delegated so its number exists.
 
