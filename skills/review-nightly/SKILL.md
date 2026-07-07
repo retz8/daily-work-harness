@@ -24,7 +24,7 @@ The morning triage/merge counterpart to the nightly producing routine: build a f
 
 2. **Pick one.** The user chooses; offer "oldest first" to walk a lane. Never auto-pick, never auto-act. A `blocked:setup` row → step 7. A PR row → step 3.
 
-3. **Check out the live PR branch.** `git fetch origin <headRef>` then `git checkout <headRef>` in the repo root — a **plain local checkout** is the review substrate (one PR at a time, so no isolation is needed). Mechanical mode reads only `gh pr diff`; local mode runs the gates / app on this checkout. **No worktree at review time** — the fix channel is set up later, only if the review sends you into the fix fork (step 6). On the terminal action you return to `main`.
+3. **Check out the live PR branch, then rebase it onto `main`.** `git fetch origin <headRef>` then `git checkout <headRef>` in the repo root — a **plain local checkout** is the review substrate (one PR at a time, so no isolation is needed). Before reviewing, **rebase this local checkout onto `main`** — `git fetch origin main` then `git rebase origin/main` — so the diff (and any local-mode gates) is judged against what it will merge into. This is **local only: never push.** The remote PR stays exactly as the run left it until a terminal decision — the only writes to the PR branch happen in the fix arm (step 6). On conflict, stop and surface the files — resolve with the user, or `git rebase --abort` back to the fetched head, before continuing to step 4; a no-op (main hadn't moved) is a fine outcome. Mechanical mode reads only `gh pr diff`; local mode runs the gates / app on this checkout. **No worktree at review time** — the fix channel is set up later, only if the review sends you into the fix fork (step 6). On the terminal action you return to `main`.
 
 4. **Review.** Offer three modes and run the chosen one:
    - **(1) mechanical** — hand the diff + the bar to `code-review` (or a review subagent);
@@ -62,5 +62,5 @@ The morning triage/merge counterpart to the nightly producing routine: build a f
 
 - The label vocabulary, kinds, and PR shape live in `autonomous-workflow.md` (`## Contract` / `## Produce`) — this skill reads them, it does not redefine them.
 - One open PR (or one `autonomous-revise-ready`) per task is the routine's guarantee — the inbox never shows duplicates, so each row is a distinct decision.
-- `rebase-with-main` is untouched by the fix arm (it only adds commits and pushes). Use it separately only if `main` genuinely moved and the branch needs to absorb it.
+- Review **rebases its local checkout onto `main` before reviewing** (step 3) so the diff is judged against current `main` — **local only, never pushed**; the remote PR is untouched until a terminal decision. This is a plain local rebase, not `rebase-with-main` (that skill keeps a *pushed* sub-task branch current and force-pushes — the wrong behavior mid-review). The only PR-branch writes happen in the fix arm (step 6b), which pushes because you have committed to the fix.
 - Project-agnostic: the repo, spec paths, gates, and skills all come from the current project's `origin` / `CLAUDE.md` / `_dev/` — never hardcoded.
