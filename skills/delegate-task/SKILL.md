@@ -33,7 +33,7 @@ Projects a task into a GitHub issue the nightly routine can run unattended. **Fi
 
 8. **Wire TODO** (`kind:spec` only): append `(#<new>)` to the sub-task's `[WIP]` line in `_dev/TODO.md` on `main`.
 
-9. **Commit + push to `main`.** The routine runs against a fresh clone and reads the referenced spec from it — an uncommitted spec is an absent path (`blocked:setup`). Stage only the `_dev/` files this delegation touches — the spec doc the issue references (and the plan doc if it references one), plus the `_dev/TODO.md` wiring from step 8 — never a blanket add of unrelated working-tree changes. Commit with a `docs` conventional-commit message and push to `origin main`. If the issue embeds its whole definition inline and references no doc (a `kind:standalone` case), there is nothing to commit — skip.
+9. **Commit + push to `main`.** `grill-to-spec` normally already committed and pushed the spec, so this step mainly lands the `_dev/TODO.md` `(#<new>)` wiring from step 8. Stage only the `_dev/` files this delegation touches — the TODO wiring, plus any referenced doc still uncommitted (a spec edited after the grill, a plan doc, a `kind:standalone` spec/plan path) — never a blanket add of unrelated working-tree changes. Commit with a `docs` conventional-commit message if anything is staged, then push to `origin main`. The routine runs against a fresh clone; a referenced doc missing from it is an absent path (`blocked:setup`), so the push must land before the routine picks the issue up. When there is nothing to commit and nothing unpushed, this is a no-op.
 
 10. **Report** the issue URL, then stop.
 

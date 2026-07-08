@@ -57,13 +57,14 @@ Number first. Filename comes from the TODO number when available, otherwise name
 1. Re-read the grilling conversation in context. Identify every decision the user explicitly accepted, rejected, or modified.
 2. Derive the target path per the File naming rules above. Do not ask, do not confirm.
 3. Write the spec directly to that path using the required structure. Do not display the draft to the user beforehand — just write it.
-4. Report the written path in one line. The user will redirect if revisions are needed.
-5. **Closing fork.** After the path is reported, offer the next step. For a **sub-task** (`task-<N.M>`) spec: **delegate** it to the nightly routine (`daily-work-harness:delegate-task`) or **work it this session**. For a **phase** spec: there is no task to delegate yet — point to inlining the phase's `N.M` sub-tasks (each is delegated later, per sub-task). This closing fork is the only next-step this skill gives.
+4. **Commit + push to `main`.** `_dev/` docs are `main` artifacts. Stage only the spec file just written — not other working-tree changes — commit with a `docs` conventional-commit message, and push to `origin main`. This lands the spec so a later `delegate-task` (which reads it from a fresh clone) finds it, and backs it up even when the task is worked this session rather than delegated. Any post-report revision is just a follow-up commit.
+5. Report the written path in one line. The user will redirect if revisions are needed.
+6. **Closing fork.** After the path is reported, offer the next step. For a **sub-task** (`task-<N.M>`) spec: **delegate** it to the nightly routine (`daily-work-harness:delegate-task`) or **work it this session**. For a **phase** spec: there is no task to delegate yet — point to inlining the phase's `N.M` sub-tasks (each is delegated later, per sub-task). This closing fork is the only next-step this skill gives.
 
 ## What this skill never does
 
 - Decompose the task into sub-tasks or a plan.
 - Specify file contents, command flags, or code shapes.
-- Add "recommended next steps" beyond the single closing fork in step 5.
+- Add "recommended next steps" beyond the single closing fork in step 6.
 - Re-open decisions the grill closed.
 - Add decisions the grill did not cover.
