@@ -112,6 +112,7 @@ Per-project operator setup, done once when adopting the routine (ungraded):
 - Enable **unrestricted branch pushes** for the repo — Routines default to `claude/`-prefixed branches, but the contract uses `phase-<N>/<M>-*` / `task/<kebab>`.
 - Ensure the environment provides the **base toolchain and network** the gates need (language runtimes, allowed domains) — the routine installs the project's own dependencies from its documented setup.
 - Ensure the project's Plan/Execution skills are committed under `.claude/skills/` — the routine has no access to plugin skills, only repo-committed ones.
+- Create the labels the routine applies — `blocked:setup`, `review-ready`, `needs-input`, `needs-attention` — on the repo once. The routine assumes they exist and cannot create them (no label-create tool, direct REST blocked); a missing one is silently skipped, losing the queue/outcome signal.
 
 ## Review
 
