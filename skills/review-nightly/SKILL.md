@@ -26,12 +26,13 @@ The morning triage/merge counterpart to the nightly producing routine: build a f
 
 3. **Check out the live PR branch, then rebase it onto `main`.** `git fetch origin <headRef>` then `git checkout <headRef>` in the repo root — a **plain local checkout** is the review substrate (one PR at a time, so no isolation is needed). Before reviewing, **rebase this local checkout onto `main`** — `git fetch origin main` then `git rebase origin/main` — so the diff (and any local-mode gates) is judged against what it will merge into. This is **local only: never push.** The remote PR stays exactly as the run left it until a terminal decision — the only writes to the PR branch happen in the fix arm (step 6). On conflict, stop and surface the files — resolve with the user, or `git rebase --abort` back to the fetched head, before continuing to step 4; a no-op (main hadn't moved) is a fine outcome. Mechanical mode reads only `gh pr diff`; local mode runs the gates / app on this checkout. **No worktree at review time** — the fix channel is set up later, only if the review sends you into the fix fork (step 6). On the terminal action you return to `main`.
 
-4. **Review.** Offer three modes and run the chosen one:
-   - **(1) mechanical** — hand the diff + the bar to `code-review` (or a review subagent);
-   - **(2) local** — run the project's documented gates / app on the checked-out branch;
-   - **(3) both** — mechanical first, then local.
+4. **Review.** A `review-ready` PR already carries a **`## Mechanical review`** section — the routine ran the mechanical read at night (against the bar) and recorded its findings there; they are advisory, not a gate. So mechanical review is **pre-computed**, not something you drive live. The default path:
+   - **Read the `## Mechanical review` section** — surface its findings (or its "no findings" note) to the user as the mechanical result.
+   - **Run local review** — the project's documented gates / app on the checked-out branch.
 
-   The **bar** is by kind: `kind:spec` → the task-level `_dev/docs/spec/task-<N.M>-*.md` (primary; the phase spec is context), `kind:standalone` → the issue body. Mechanical review judges three things: does the change **fulfil the bar**, **real bugs** in the diff, **scope creep** (touched `_dev/` beyond its own plan doc, or another task's surface). Surface findings — never decide for the user.
+   Offer **re-running mechanical live** (hand the diff + the bar to `code-review`) as an **opt-in** only — the night's read was against `main`-as-of-production, so a fresh pass judges the diff against the rebased `main` (step 3). Otherwise trust the attached section.
+
+   The **bar** is by kind: `kind:spec` → the task-level `_dev/docs/spec/task-<N.M>-*.md` (primary; the phase spec is context), `kind:standalone` → the issue body. Mechanical review (whether the attached section or a live re-run) judges three things: does the change **fulfil the bar**, **real bugs** in the diff, **scope creep** (touched `_dev/` beyond its own plan doc, or another task's surface). Surface findings — never decide for the user.
 
 5. **Decide** (ask the user), by lane:
    - **`review-ready`** → **Merge** (step 6a). If the review fails, it drops into the fix fork (step 6b/6c).

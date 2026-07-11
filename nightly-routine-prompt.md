@@ -51,7 +51,9 @@ You are handling **one** work-item end to end — either a fresh **issue** (prod
 
 4. **Do the work.** Invoke **exactly** the named skills — the Plan skill first (if named), then the Execution skill (if named). Run freeform if none are named. Invoke no skill the issue did not name. On a **resume**, continue the existing partial work toward the resolved decision rather than starting over. If a Plan skill runs, its plan doc is written **on this branch** — it is the only `_dev/` file you may write. Never touch `_dev/TODO.md`, or (beyond a case-2 spec change already present on a resume branch) specs or handoffs. Decide anything inferable from the spec, the repo's conventions, or existing patterns with best judgment and record it as an assumption; escalate to `needs-input` only for a decision that is **material, genuinely underdetermined, and costly if wrong**. If you escalate to `needs-input`, stop implementation here — skip the gate branching in step 5 and go to step 6 with the **Decision needed** section (its Gates block records whatever ran, or "not run — blocked before completion").
 
-5. **Run the gates.** Run the project's documented verification gates (from its `CLAUDE.md` / subproject READMEs); capture what ran and the result. Then branch on the outcome: gates **green** → continue to step 6 (`review-ready`); gates **ran and failed** → continue to step 6 with the **Failure** section and outcome `needs-attention`; gates **cannot run at all** (environment not provisioned, command absent) → apply the `blocked:setup` label + comment as in step 2 (Blocker = "gates could not run"); the branch may be left as-is (a re-queue recreates it). Return `blocked:setup`.
+5. **Run the gates.** Run the project's documented verification gates (from its `CLAUDE.md` / subproject READMEs); capture what ran and the result. Then branch on the outcome: gates **green** → continue to step 5a (clean path, `review-ready`); gates **ran and failed** → continue to step 6 with the **Failure** section and outcome `needs-attention`; gates **cannot run at all** (environment not provisioned, command absent) → apply the `blocked:setup` label + comment as in step 2 (Blocker = "gates could not run"); the branch may be left as-is (a re-queue recreates it). Return `blocked:setup`.
+
+5a. **Mechanical self-review (clean path only).** Only on gates-green. Review your own diff against the **bar** — the `task-<N.M>` spec for `kind:spec` (the phase spec is context), the issue body for `kind:standalone` — hand the diff + the bar to the project's `code-review` (or review freeform if none). Judge three things: does the change **fulfil the bar**, **real bugs** in the diff, **scope creep** (touched `_dev/` beyond its own plan doc, or another task's surface). **Do not patch anything** — these findings are advisory context for the human reviewer, not a gate. The outcome stays `review-ready` regardless of what the review surfaces; only red *gates* (step 5) produce `needs-attention`. Record the findings in the PR body's **Mechanical review** section (step 6). This runs against `main`-as-of-now; the morning reviewer may re-run it against a rebased `main`.
 
 6. **Commit, push, and land the PR.** Commit your work (conventional commits) and push the branch. The PR is always **non-draft**: base = default branch, head = the item's branch, title mirrors the issue.
    - **Fresh issue:** open the PR. If the branch has no commits yet (a `needs-input` that blocked before implementation), make an empty commit first (`git commit --allow-empty`) so a PR can open.
@@ -69,6 +71,10 @@ You are handling **one** work-item end to end — either a fresh **issue** (prod
    <the gates that ran and their result>
 
    <then the section(s) for this outcome:>
+
+   ## Mechanical review      (review-ready only — advisory, from step 5a)
+   - <finding + file:line, one per line>
+   - <or, if none: "Mechanical self-review run; no findings.">
 
    ## Assumptions            (review-ready / needs-input — judgment calls made)
    - <assumption + why>
