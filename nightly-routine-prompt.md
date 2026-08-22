@@ -20,7 +20,7 @@ Once you have work-items to process, provision this fresh clone so the gates can
 
 2. **Drain the queue.** For each work-item in order, **dispatch a subagent** and give it (a) the entire "## Per-item procedure" section below, verbatim, and (b) the work-item — an **issue number** (fresh) or an **`autonomous-revise-ready` PR number** (resume). The subagent produces or updates one PR — or takes the `blocked:setup` path — and returns a one-line outcome. Do **not** do the per-item work in this orchestrator context; delegate it, so your context holds only the queue and the returned summaries.
 
-important: limited to maximum 5 items per routine run for having enough contexts. if there are more than 5 items available for queue, do 5 oldest tasks.
+important: limited to maximum 10 items per routine run for having enough contexts. if there are more than 10 items available for queue, do 10 oldest tasks.
 
 3. **Finish before moving on.** Start the next work-item only after the current subagent returns. Each is fully checkpointed on GitHub (an open PR, or a `blocked:setup` label) before the next begins, so the run is resumable if it is cut short.
 
