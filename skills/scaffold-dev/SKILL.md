@@ -32,7 +32,7 @@ _dev/
 1. **Guard.** If `_dev/` already exists, stop and report — make no changes.
 2. Create the tree above. The `.gitkeep` files keep the empty `docs/` subdirs tracked.
 3. Write `_dev/TODO.md` with the skeleton below.
-4. Report what was created, and tell the user to add their first `## Phase 1` then run `daily-work-harness:pick-up-task`.
+4. Report what was created, and tell the user to run `daily-work-harness:scaffold-claude-md` next, then add their first `## Phase 1` and run `daily-work-harness:pick-up-task`.
 
 ## TODO.md skeleton
 

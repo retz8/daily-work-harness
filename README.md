@@ -36,6 +36,7 @@ Or interactively:
 Invoked namespaced as `/daily-work-harness:<skill>`:
 
 - **scaffold-dev** — one-time setup: create the `_dev/` working area on a fresh repo.
+- **scaffold-claude-md** — one-time setup: append the harness's operating conventions to the repo's `CLAUDE.md`.
 - **pick-up-task** — session dispatcher; reads `_dev/TODO.md`, routes to spec or sub-task work.
 - **grill-to-spec** — convert a completed `grill-me` session into a spec under `_dev/docs/spec/`.
 - **rebase-with-main** — rebase a sub-task worktree branch onto `main`.
