@@ -21,7 +21,7 @@ The session's dispatcher. **Read `${CLAUDE_PLUGIN_ROOT}/daily-workflow.md` in fu
 4. **Sub-task track** (spec'd phase, after the user picks a sub-task from step 2):
    - **Mark `[WIP]`.** Once the sub-task is picked, mark its `N.M` checkbox `[WIP]` on `main`.
    - **Brief the chosen sub-task, then stop.** Give a short context summary — what the sub-task should achieve, drawn from both TODO and the phase spec. Do **not** proceed past this. Wait for the user's go-ahead.
-   - **On go-ahead**, offer these routes (planning stays on `main`): (a) `grill-me` deeper, (b) `superpowers:writing-plans` → `_dev/docs/plan/task-<N.M>-*.md`, (c) Claude Code plan mode → implementation, (d) `daily-work-harness:delegate-task` → hand the sub-task to the nightly routine.
+   - **On go-ahead**, offer these routes (planning stays on `main`): (a) `grill-me` deeper, (b) implementation — through Claude Code plan mode first only when the implementation is complex, (c) `daily-work-harness:delegate-task` → hand the sub-task to the nightly routine.
    - **Only when implementation begins**, create or resume the worktree off `main` (`phase-<N>/<M>-<kebab>`) and run `daily-work-harness:rebase-with-main`. The worktree holds code only; `_dev/` stays on `main`.
 
 5. **Stop.** Pickup ends here; the user drives what happens next. Closing a session is `daily-work-harness:wrap-up`'s job, not this skill's.

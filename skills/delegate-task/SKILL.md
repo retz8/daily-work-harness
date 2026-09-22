@@ -14,7 +14,7 @@ Projects a task into a GitHub issue the nightly routine can run unattended. **Fi
    - Invoked with no argument or a free-form description → **`kind:standalone`**. Interview for the full definition; derive a kebab title.
 
 2. **Readiness gate.** Confirm the task is defined enough to run unattended.
-   - `kind:spec`: the phase must be spec'd (else stop — "spec the phase first"). If the sub-task is only a thin phase-spec handle, offer to grill / `superpowers:writing-plans` now, or proceed and let the Plan skill plan from the phase spec. A missing plan doc is **not** a blocker; too thin to plan from is — send that back to a grill/spec.
+   - `kind:spec`: the phase must be spec'd (else stop — "spec the phase first"). If the sub-task is only a thin phase-spec handle, offer to grill now, or proceed and let the Plan skill plan from the phase spec. A missing plan doc is **not** a blocker; too thin to plan from is — send that back to a grill/spec.
    - `kind:standalone`: the interview captures the definition; a large one may point to a spec/plan path instead of inlining.
    - Normally trivial — `/delegate-task` usually follows a grill/spec in the same session.
 

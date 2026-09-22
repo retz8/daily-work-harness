@@ -26,10 +26,9 @@ Reads `_dev/TODO.md` + this doc, then routes on phase state. Phase selection: th
 
 1. Read the phase spec **in full** + TODO; compute the **startable** sub-tasks (next-in-order plus any parallel-eligible). **Present all of them — even if only one. Never auto-pick.** User chooses.
 2. Present a summary of the chosen sub-task, drawn from the phase spec.
-3. Offer three choices — **planning happens on `main` first**:
+3. Offer two choices — **planning happens on `main` first**:
    - `grill-me` deeper into the sub-task.
-   - `superpowers:writing-plans` → plan to `_dev/docs/plan/task-<N.M>-*.md`.
-   - Claude Code plan mode → straight to implementation.
+   - Implementation — through Claude Code plan mode first only when the implementation is complex.
 4. **Only when implementation begins**, create the worktree off `main` (`phase-<N>/<M>-<kebab>`, via `rebase-with-main`). It holds only code.
 
 ## Wrap-up — `wrap-up`
