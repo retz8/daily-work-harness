@@ -59,7 +59,12 @@ Number first. Filename comes from the TODO number when available, otherwise name
 3. Write the spec directly to that path using the required structure. Do not display the draft to the user beforehand — just write it.
 4. **Commit to `main`** (do not push). `_dev/` docs are `main` artifacts and the grill runs on `main`. Stage only the spec file just written — not other working-tree changes — and commit with a `docs` conventional-commit message. **Do not push** — the spec stays local and revisable (a later gap is a follow-up commit or amend, nothing on the remote to unwind); pushing is a handoff action that belongs to `delegate-task`, or to whenever `main` is next pushed. Committing here lands the spec on `main` as its own commit for the work-this-session path too, so it never rides a worktree branch.
 5. Report the written path in one line. The user will redirect if revisions are needed.
-6. **Closing fork.** After the path is reported, offer the next step. For a **sub-task** (`task-<N.M>`) spec: **delegate** it to the nightly routine (`daily-work-harness:delegate-task`) or **work it this session**. For a **phase** spec: there is no task to delegate yet — point to inlining the phase's `N.M` sub-tasks (each is delegated later, per sub-task). This closing fork is the only next-step this skill gives.
+6. **Closing fork.** After the path is reported, offer the next step. For a **sub-task** (`task-<N.M>`) spec, offer three options:
+   1. **Delegate** it to the nightly routine (`daily-work-harness:delegate-task`).
+   2. **Work on it in this session** — with a token warning: this session carries the whole grill conversation, and every implementation call rereads it.
+   3. **Work on it in a fresh session from the spec file** — the new session starts from the spec path just reported.
+
+   For a **phase** spec: there is no task to delegate yet — point to inlining the phase's `N.M` sub-tasks (each is delegated later, per sub-task). This closing fork is the only next-step this skill gives.
 
 ## What this skill never does
 
