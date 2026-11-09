@@ -4,5 +4,6 @@
   "skills": "./skills/",
   "author": {
     "name": "retz8"
-  }
+  },
+  "license": "MIT"
 }
