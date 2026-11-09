@@ -1,6 +1,8 @@
 {
   "name": "daily-work-harness",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "skills": "./skills/",
-  "author": { "name": "retz8" }
+  "author": {
+    "name": "retz8"
+  }
 }
