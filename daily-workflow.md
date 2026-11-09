@@ -5,12 +5,12 @@ The map of how work flows from `_dev/TODO.md` through a working session. `pick-u
 ## Model
 
 - The **phase** (`## Phase N` in `_dev/TODO.md`) is the unit of work. **Sub-tasks** (`N.M`) are its implementation steps, derived after the phase spec is written.
-- **All of `_dev/` lives on `main`** — `TODO.md`, `docs/spec/`, `docs/plan/`, `docs/handoff/` are edited and committed on `main` only.
+- **All of `_dev/` lives on `main`** — `TODO.md`, `TODO-done.md`, `docs/spec/`, `docs/plan/`, `docs/handoff/` are edited and committed on `main` only.
 - **Code lives in worktrees off `main`.** A worktree branch carries only implementation code, never `_dev/` edits.
 
 ## Dispatch — `pick-up-task`
 
-Reads `_dev/TODO.md` + this doc, then routes on phase state. Phase selection: the earliest non-`[done]` phase; a `[WIP]` phase is resumed before any later phase.
+Reads `_dev/TODO.md` + this doc, then routes on phase state. Phase selection: the earliest open phase (a `## Phase N` heading without `[done]`); a `[WIP]` phase is resumed before any later phase. Closed phases are index lines under `## Done`, their full sections in `_dev/TODO-done.md` — not read at dispatch.
 
 | Phase state | Route |
 |---|---|
@@ -34,7 +34,7 @@ Reads `_dev/TODO.md` + this doc, then routes on phase state. Phase selection: th
 ## Wrap-up — `wrap-up`
 
 - Commit the session's changes (conventional commits; multiple commits fine).
-- If the sub-task is done: tick `N.M`; if it was the last, ask to mark the phase `[done]`. Owns the user-permitted worktree → `main` merge.
+- If the sub-task is done: tick `N.M`; if it was the last, ask to mark the phase `[done]` and, on yes, archive it — the section moves verbatim to `_dev/TODO-done.md`, one index line stays under `## Done`. Owns the user-permitted worktree → `main` merge.
 - If invoked mid-session: overwrite the concise handoff doc (`_dev/docs/handoff/phase-<N>.md` or `task-<N.M>.md`).
 
 ## Autonomous layer
@@ -48,6 +48,7 @@ The autonomous half — delegate a task to a GitHub issue, a nightly routine pro
 
 ## Artifacts (all tracked, on `main`)
 
+- `_dev/TODO-done.md` — closed phases' sections, verbatim, appended at phase close (kept).
 - `_dev/docs/spec/phase-<N>-*.md` — phase spec (kept).
 - `_dev/docs/plan/task-<N.M>-*.md` — optional sub-task plan (kept).
 - `_dev/docs/handoff/{phase-<N>,task-<N.M>}.md` — concise session summary, one per scope, overwritten each `wrap-up`.

@@ -40,7 +40,7 @@ Invoked namespaced as `/daily-work-harness:<skill>`:
 - **pick-up-task** — session dispatcher; reads `_dev/TODO.md`, routes to spec or sub-task work.
 - **grill-to-spec** — convert a completed `grill-me` session into a spec under `_dev/docs/spec/`.
 - **rebase-with-main** — rebase a sub-task worktree branch onto `main`.
-- **wrap-up** — close a session: commit, tick `_dev/TODO.md`, merge a finished sub-task, or save a handoff.
+- **wrap-up** — close a session: commit, tick `_dev/TODO.md`, merge a finished sub-task, archive a closed phase to `_dev/TODO-done.md`, or save a handoff.
 - **review-nightly** — triage what an autonomous run left on the remote: a four-lane inbox of labelled PRs (`review-ready` / `needs-input` / `needs-attention`) and `blocked:setup` issues, reviewed on their live branch, then merged / fixed / re-delegated / rejected.
 - **delegate-task** — project a task into a GitHub issue conforming to the autonomous-run contract, for the nightly routine to pick up.
 

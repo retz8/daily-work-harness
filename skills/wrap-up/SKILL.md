@@ -7,7 +7,7 @@ description: Use when ending a working session in the daily-work harness — to 
 
 Closes a session. See `${CLAUDE_PLUGIN_ROOT}/daily-workflow.md` for the loop this fits.
 
-**Invariant: all `_dev/` edits (TODO ticks, handoff docs) are committed on `main`** — never on a sub-task branch. When code work happened in a worktree, make those `_dev/` edits in the main checkout.
+**Invariant: all `_dev/` edits (TODO ticks, the phase archive, handoff docs) are committed on `main`** — never on a sub-task branch. When code work happened in a worktree, make those `_dev/` edits in the main checkout.
 
 ## Steps
 
@@ -21,7 +21,9 @@ Closes a session. See `${CLAUDE_PLUGIN_ROOT}/daily-workflow.md` for the loop thi
 
    **Done — sub-task complete:**
    - Tick its `N.M` checkbox in `_dev/TODO.md` (on `main`).
-   - If it was the **last** sub-task of the phase, ask the user whether to mark `## Phase N` `[done]`.
+   - If it was the **last** sub-task of the phase, ask the user whether to mark `## Phase N` `[done]`. On yes, mark it and **archive the phase**:
+     - Move the phase's whole section — from its `## Phase N` heading to the line before the next `## ` heading — **verbatim** to the end of `_dev/TODO-done.md` (create the file with a `# <project> — Dev TODO, done phases` title the first time). No rewording, no trimming.
+     - Leave one index line in `_dev/TODO.md` under `## Done — Phases <first>–<N>`, a section above the first open phase, created the first time with the sentence ``Each phase's full section, its sub-tasks and what landed, as it closed: `_dev/TODO-done.md`.`` Update the range in its heading. The line: ``- **Phase N — <title>** · done <YYYY-MM-DD> · spec `<the phase's spec path>` ``.
    - **Ask the user to confirm the merge.** Only on confirmation: merge the sub-task branch (`phase-<N>/<M>-<kebab>`) into `main`, then remove its worktree. Never merge unprompted.
 
    **Mid-session** — work genuinely unfinished (spec or sub-task):
@@ -34,3 +36,4 @@ Closes a session. See `${CLAUDE_PLUGIN_ROOT}/daily-workflow.md` for the loop thi
 
 - The handoff doc is what `daily-work-harness:pick-up-task` reads on a `[WIP]` resume — keep it scannable, not a transcript.
 - Don't tick a checkbox or mark a phase `[done]` for work that isn't actually finished.
+- The archive is what keeps `_dev/TODO.md` small enough to read whole at every pickup; a closed phase's record lives on in `_dev/TODO-done.md`, unchanged.
